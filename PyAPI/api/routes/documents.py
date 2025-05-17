@@ -2,7 +2,8 @@ from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Depends
 from typing import List, Optional
 from core.config import settings
 from utils.text_processing import extract_text_from_file
-from api.models.documents import CVCreate
+from api.models.documents import CVCreate, CVResponse
+from api.services.document_service import create_cv
 
 router = APIRouter()
 
@@ -29,7 +30,21 @@ async def create_new_document(
                     detail="Unsupported file format. Only PDF, DOCX, and TXT are allowed."
                 )
             text = extract_text_from_file(file_content, f".{file_extension}")
+        
+        cv_data = CVCreate(
+            title=title,
+            candidate_name=candidate_name,
+            content=text if file else content
+        )
 
-        return {"filename": "example.txt", "message": text}
+        # Save the CV to the database
+        cv = await create_cv(cv_data)
+
+        return CVResponse(
+            id=cv.id,
+            title=cv.title,
+            created_at=cv.created_at,
+            candidate_name=cv.candidate_name
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

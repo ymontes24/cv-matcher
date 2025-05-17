@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     API_PORT: int = int(os.getenv("API_PORT", "8000"))
     
     # MongoDB
-    MONGODB_URL: str = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
+    MONGODB_URL: str = os.getenv("MONGODB_URL", "mongodb://root:root@localhost:27017")
     MONGODB_DB: str = os.getenv("MONGODB_DB", "cv_match")
     MONGODB_COLLECTION_CVS: str = os.getenv("MONGODB_COLLECTION_CVS", "cvs")
     MONGODB_COLLECTION_JOB_DESCRIPTIONS: str = os.getenv("MONGODB_COLLECTION_JOB_DESCRIPTIONS", "job_descriptions")

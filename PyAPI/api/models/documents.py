@@ -31,3 +31,6 @@ class DocumentResponse(BaseModel):
     
     class Config:
         orm_mode = True
+
+class CVResponse(DocumentResponse):
+    candidate_name: str
