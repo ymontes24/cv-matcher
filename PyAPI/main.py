@@ -4,8 +4,7 @@ from db.mongodb import connect_to_mongo, close_mongo_connection
 from core.config import settings
 from core.logging import app_logger
 from contextlib import asynccontextmanager
-from api.routes import documents
-from api.routes import job_description
+from api.routes import documents, job_description, match
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -45,6 +44,7 @@ app.add_middleware(
 
 app.include_router(documents.router, prefix="/api/documents", tags=["documents"])
 app.include_router(job_description.router, prefix="/api/job_descriptions", tags=["job_descriptions"])
+app.include_router(match.router, prefix="/api/match", tags=["match"])
 
 @app.get("/api/health")
 async def health():

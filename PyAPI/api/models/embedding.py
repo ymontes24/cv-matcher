@@ -22,7 +22,7 @@ class PyObjectId(ObjectId):
     
 class Embedding(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    doc_id: PyObjectId
+    doc_id: str
     chunk_index: int
     text: str
     embedding: List[float]

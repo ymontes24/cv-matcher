@@ -43,3 +43,16 @@ async def insert_embeddings(collection: AsyncIOMotorCollection, doc_id: str, chu
             await collection.insert_many(documents)
     except Exception as e:
         print(f"An error occurred: {e}")
+
+async def get_embeddings(collection: AsyncIOMotorCollection, doc_id: str):
+    try:
+        # Retrieve the embeddings for the given document ID
+        cursor = collection.find({"doc_id": doc_id})
+        embeddings = await cursor.to_list(length=None)
+        
+        # Convert the MongoDB documents to Embedding objects
+        embeddings = [Embedding(**embedding) for embedding in embeddings]
+        
+        return embeddings
+    except Exception as e:
+        print(f"An error occurred: {e}")
