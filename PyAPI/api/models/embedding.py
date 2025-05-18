@@ -20,9 +20,9 @@ class PyObjectId(ObjectId):
         field_schema.update(type="string", format="objectid")
         return field_schema
     
-class CVEmbedding(BaseModel):
+class Embedding(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    cv_id: PyObjectId
+    doc_id: PyObjectId
     chunk_index: int
     text: str
     embedding: List[float]

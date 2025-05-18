@@ -5,6 +5,7 @@ from core.config import settings
 from core.logging import app_logger
 from contextlib import asynccontextmanager
 from api.routes import documents
+from api.routes import job_description
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -43,6 +44,7 @@ app.add_middleware(
 )
 
 app.include_router(documents.router, prefix="/api/documents", tags=["documents"])
+app.include_router(job_description.router, prefix="/api/job_descriptions", tags=["job_descriptions"])
 
 @app.get("/api/health")
 async def health():

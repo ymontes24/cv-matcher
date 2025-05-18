@@ -1,9 +1,7 @@
-from typing import List, Dict, Any, Optional
-from bson import ObjectId
 from db.mongodb import mongodb
 from core.logging import app_logger
 from api.models.documents import CVCreate, CV
-from api.services.embedding_service import create_embeddings,insert_cv_embeddings
+from api.services.embedding_service import create_embeddings,insert_embeddings
 
 async def create_cv(cv_data: CVCreate) -> CV:
     cv = CV(
@@ -22,7 +20,7 @@ async def create_cv(cv_data: CVCreate) -> CV:
         app_logger.info("Embeddings created successfully.")
 
         app_logger.info("Inserting CV embeddings into the database...")
-        await insert_cv_embeddings(mongodb.db['cv_embeddings'], cv.id, embeddings)
+        await insert_embeddings(mongodb.db['cv_embeddings'], cv.id, embeddings)
         app_logger.info("CV embeddings inserted successfully.")
         
         return cv

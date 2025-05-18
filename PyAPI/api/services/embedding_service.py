@@ -3,6 +3,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from typing import List
 from motor.motor_asyncio import AsyncIOMotorCollection
+from api.models.embedding import Embedding
 
 async def create_embeddings(text: str):    
     text_splitter = RecursiveCharacterTextSplitter(
@@ -24,12 +25,12 @@ async def create_embeddings(text: str):
     
     return documents
 
-async def insert_cv_embeddings(collection: AsyncIOMotorCollection, cv_id: str, chunks: List[dict]):
+async def insert_embeddings(collection: AsyncIOMotorCollection, doc_id: str, chunks: List[dict]):
     try:
         # Prepare the data for insertion
-        documents = [
+        documents:List[Embedding] = [
             {
-                "cv_id": cv_id,
+                "doc_id": doc_id,
                 "chunk_index": i,
                 "text": chunk["text"],
                 "embedding": chunk["embedding"]
