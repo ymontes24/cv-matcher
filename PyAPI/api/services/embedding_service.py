@@ -1,9 +1,10 @@
 from core.config import settings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
+from typing import List
+from motor.motor_asyncio import AsyncIOMotorCollection
 
 async def create_embeddings(text: str):    
-    # Split the text into smaller chunks
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=settings.CHUNK_SIZE,
         chunk_overlap=settings.CHUNK_OVERLAP
@@ -22,3 +23,22 @@ async def create_embeddings(text: str):
         documents.append(doc)
     
     return documents
+
+async def insert_cv_embeddings(collection: AsyncIOMotorCollection, cv_id: str, chunks: List[dict]):
+    try:
+        # Prepare the data for insertion
+        documents = [
+            {
+                "cv_id": cv_id,
+                "chunk_index": i,
+                "text": chunk["text"],
+                "embedding": chunk["embedding"]
+            }
+            for i, chunk in enumerate(chunks)
+        ]
+
+        # Insert the documents into the collection
+        if documents:
+            await collection.insert_many(documents)
+    except Exception as e:
+        print(f"An error occurred: {e}")
