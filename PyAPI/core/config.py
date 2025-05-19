@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
     CHUNK_SIZE: int = int(os.getenv("CHUNK_SIZE", "300"))
     CHUNK_OVERLAP: int = int(os.getenv("CHUNK_OVERLAP", "75"))
+
+    # OpenAI
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "sk-")
     
     # Aplicación
     APP_NAME: str = "CV Matcher"

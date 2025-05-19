@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException, Query
 from bson import ObjectId
 from api.services.mathc_service import match_cv
+from api.services.job_description_service import get_job_description_by_id
+from api.services.evaluator import evaluate_cv
 
 router = APIRouter()
 
@@ -17,11 +19,14 @@ async def match_cv_job_id(
     
     try:
         matched_job_description = await match_cv(jd_id)
+        job_description = await get_job_description_by_id(jd_id)
         
-        if not matched_job_description:
+        if not all([matched_job_description, job_description]):
             raise HTTPException(status_code=404, detail="No matching job description found.")
         
-        return matched_job_description
+        evalutaion = await evaluate_cv(job_description.job_description, matched_job_description)    
+        
+        return evalutaion
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     

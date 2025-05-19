@@ -1,6 +1,7 @@
+from bson import ObjectId
 from db.mongodb import mongodb
 from core.logging import app_logger
-from api.models.job_description import JobDescriptionCreate, JobDescription
+from api.models.job_description import JobDescriptionCreate, JobDescription, JobDescriptionResponse
 from api.services.embedding_service import create_embeddings,insert_embeddings
 
 async def create_job_description(job_description_data: JobDescriptionCreate) -> JobDescription:
@@ -28,4 +29,15 @@ async def create_job_description(job_description_data: JobDescriptionCreate) -> 
         return jd
     except Exception as e:
         app_logger.error(f"Error creating job description: {e}")
+        raise e
+    
+async def get_job_description_by_id(job_description_id: str) -> JobDescriptionResponse:
+    try:
+        job_description = await mongodb.db['job_descriptions'].find_one({"_id": ObjectId(job_description_id)})
+        if not job_description:
+            app_logger.warning(f"Job description with ID {job_description_id} not found.")
+            return None
+        return JobDescriptionResponse(**job_description)
+    except Exception as e:
+        app_logger.error(f"Error retrieving job description: {e}")
         raise e

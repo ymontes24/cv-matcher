@@ -1,9 +1,8 @@
 from db.mongodb import mongodb
-from typing import List
 from core.logging import app_logger
 from api.services.embedding_service import get_embeddings
-from api.models.job_description import JobDescription
 from collections import defaultdict
+from bson import ObjectId
 
 async def match_cv(
         doc_id: str,
@@ -33,6 +32,7 @@ async def match_cv(
                     "$project": {
                         "_id": 0,
                         "doc_id": 1,
+                        "text": 1,
                         "score": {"$meta": "vectorSearchScore"}
                     }
                 }
@@ -54,14 +54,20 @@ async def match_cv(
                 filtered_matches.append({
                     "doc_id": doc_id,
                     "score": avg_score,
+                    "text": [c["text"] for c in high_score_chunks],
                     "match_count": len(high_score_chunks),
                 })
 
-        filtered_matches.sort(key=lambda x: x["score"], reverse=True)
+        filtered_matches.sort(key=lambda x: x["score"], reverse=True) 
+        result = []
+        for doc in filtered_matches[:top_k]:
+            mongo_doc = await mongodb.db['cvs'].find_one({"_id": ObjectId(doc["doc_id"])}, {"candidate_name": 1})
+            doc["candidate_name"] = mongo_doc.get("candidate_name") if mongo_doc else None
+            result.append(doc)
+            
+        return result
 
-        app_logger.info(f"Filtered matches: {filtered_matches}")
-        
-        return True
     except Exception as e:
         app_logger.error(f"Error retrieving job description embeddings: {e}")
         raise e
+    
